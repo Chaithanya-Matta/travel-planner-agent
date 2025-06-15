@@ -1,0 +1,10 @@
+langgraph
+fastapi
+python-dotenv
+langchain-openai
+pydantic
+routers
+streamlit
+requests
+pydantic-settings
+langchain
