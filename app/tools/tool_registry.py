@@ -1,21 +1,30 @@
 from langchain.tools import tool
-
-# Dummy implementations for now — will connect to real APIs later
-
-@tool
-def get_weather(city: str) -> str:
-    """Get current weather in the given city."""
-    return f"The weather in {city} is sunny and 25°C."
-
-@tool
-def search_hotels(city: str, days: int) -> float:
-    """Estimate total hotel cost in a city for N days."""
-    return days * 120.0  # Assume $120/night
+from app.services.weather import (
+    get_current_weather as fetch_current_weather,
+    get_weather_forecast as fetch_weather_forecast
+)
+from app.services.itinerary import generate_full_itinerary, generate_day_plan
+from app.services.search import search_attractions, search_activities
+# from app.services.hotels import get_hotel_tools
+# search_hotels, estimate_total_hotel_cost, budget_range, get_hotel_tools
 
 @tool
-def get_attractions(city: str) -> str:
-    """Get top attractions for a city."""
-    return f"Top attractions in {city} include museums, parks, and monuments."
+def get_current_weather(city: str) -> str:
+    """
+    Get current weather for a given city using OpenWeatherMap.
+    Returns a human-readable summary.
+    """
+    return fetch_current_weather(city)
+
+@tool
+def get_weather_forecast(city: str, days: int = 3) -> str:
+    """
+    Get a multi-day weather forecast for a given city (up to 5 days).
+    FYI from developer : 
+    OpenWeatherMapAPIWrapper currently does not support real forecasts — it’s limited to current weather.
+    Forecasts are in 3-hour steps; our wrapper method groups by day
+    """
+    return fetch_weather_forecast(city, days)
 
 @tool
 def convert_currency(amount: float, to_currency: str) -> float:
@@ -24,4 +33,19 @@ def convert_currency(amount: float, to_currency: str) -> float:
     return amount * exchange_rate
 
 # List of all available tools
-TOOLS = [get_weather, search_hotels, get_attractions, convert_currency]
+TOOLS = [get_current_weather, 
+         get_weather_forecast, 
+         generate_full_itinerary, 
+         generate_day_plan, 
+         search_attractions, 
+         search_activities, 
+         convert_currency]
+
+def get_all_tools(llm=None):
+    print("**********************************************************")
+    print("Entered get_all_tools")
+    # print(llm)
+    print("**********************************************************")
+    tools = TOOLS
+    # tools += get_hotel_tools(llm)
+    return tools

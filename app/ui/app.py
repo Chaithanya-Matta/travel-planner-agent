@@ -1,5 +1,8 @@
 import streamlit as st
 import requests
+import os
+
+FASTAPI_URL = os.getenv("FASTAPI_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="Travel Agent Chat", layout="centered")
 st.title("🧳 Travel Planner ReAct Chatbot")
@@ -51,7 +54,7 @@ if prompt := st.chat_input("Ask me about your trip..."):
         # Call the ReAct-style backend agent
         try:
             response = requests.post(
-                "http://localhost:8000/chat",
+                f"{FASTAPI_URL}/chat",
                 json={"message": prompt}
             )
             result = response.json()

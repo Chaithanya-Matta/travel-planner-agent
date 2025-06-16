@@ -4,10 +4,17 @@ from langchain_core.messages import BaseMessage
 # from langchain_core.embeddings import Embeddings
 from app.config import settings
 from typing import List
+from langsmith import Client
+import os
 
 class OpenAIService:
     def __init__(self):
-        
+        # os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        # os.environ["LANGCHAIN_API_KEY"] = settings.LANGCHAIN_API_KEY
+        # os.environ["LANGCHAIN_PROJECT"] = settings.LANGCHAIN_PROJECT
+        # self.client = Client(
+        #     api_key=settings.LANGCHAIN_API_KEY
+        # )
         self.chat_model: BaseChatModel = ChatOpenAI(
             model=settings.OPENAI_CHAT_MODEL,
             temperature=1,

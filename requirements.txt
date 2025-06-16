@@ -8,3 +8,9 @@ streamlit
 requests
 pydantic-settings
 langchain
+uvicorn
+langsmith
+pyowm
+langchain-community
+amadeus
+duckduckgo-search

@@ -2,10 +2,16 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.prebuilt import ToolNode, tools_condition 
 from langgraph.graph import MessagesState, StateGraph
 from app.services.open_ai import OpenAIService
-from app.tools.tool_registry import TOOLS
+from app.tools.tool_registry import get_all_tools
+from langsmith import traceable
 
 # Setup LLM bound with tools
-llm = OpenAIService().chat_model.bind_tools(TOOLS)
+# llm = OpenAIService().chat_model.bind_tools(TOOLS)
+
+open_ai_service = OpenAIService()
+llm = open_ai_service.chat_model
+TOOLS = get_all_tools(llm = llm)
+llm_with_tools = llm.bind_tools(TOOLS)
 
 # System prompt
 SYSTEM_PROMPT = SystemMessage(content="""
@@ -20,7 +26,7 @@ SYSTEM_PROMPT = SystemMessage(content="""
 def react_llm(state: MessagesState):
     history = state["messages"]
     inputs = [SYSTEM_PROMPT] + history
-    response = llm.invoke(inputs)
+    response = llm_with_tools.invoke(inputs)
     return {"messages": [response]}
 
 # Build LangGraph
@@ -35,6 +41,7 @@ builder.set_finish_point("travel_planner_agent")
 travel_graph = builder.compile()
 
 # Entry function
+@traceable(name="run_travel_agent")
 async def run_travel_agent(message: str):
     history = [HumanMessage(content=message)]
     response = travel_graph.invoke({"messages": history})
