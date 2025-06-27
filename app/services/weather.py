@@ -74,14 +74,13 @@ def get_weather_forecast(city: str, days: int = 3) -> str:
             desc = entry["weather"][0]["description"]
 
             if date_str != current_day:
+                if count >= days:
+                    break
                 count += 1
                 current_day = date_str
                 output += f"\n📅 {date_str}:\n"
 
             output += f"  - {time_str} → {temp:.1f}°C, {desc}\n"
-
-            if count >= days:
-                break
         # print("**********************************************************")
         # print(output)
         # print("**********************************************************")
